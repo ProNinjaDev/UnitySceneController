@@ -27,14 +27,18 @@ public class CameraController : MonoBehaviour
             {
                 float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
                 offset = Quaternion.AngleAxis(mouseX, Vector3.up) * offset;
-                float mouseY = -Input.GetAxis("Mouse Y") * rotationSpeed;
-                Vector3 oldOffset = offset;
-                offset = Quaternion.AngleAxis(mouseY, transform.right) * offset;
 
-                float angle = Vector3.Angle(Vector3.up, offset);
-                if (angle < 5f || angle > 85f)
+                if (!Input.GetKey(KeyCode.LeftShift))
                 {
-                    offset = oldOffset;
+                    float mouseY = -Input.GetAxis("Mouse Y") * rotationSpeed;
+                    Vector3 oldOffset = offset;
+                    offset = Quaternion.AngleAxis(mouseY, transform.right) * offset;
+
+                    float angle = Vector3.Angle(Vector3.up, offset);
+                    if (angle < 5f || angle > 85f)
+                    {
+                        offset = oldOffset;
+                    }
                 }
             }
 
