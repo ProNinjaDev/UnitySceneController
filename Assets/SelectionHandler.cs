@@ -9,6 +9,8 @@ public class SelectionHandler : MonoBehaviour
 
     private GameObject currentSelectedObject;
 
+    public CameraController cameraController;
+
     void Start()
     {
         
@@ -48,6 +50,9 @@ public class SelectionHandler : MonoBehaviour
 
         currentSelectedObject = newObject;
         currentSelectedObject.GetComponent<Renderer>().material = selectedMat;
+
+        cameraController.FocusOnObject(currentSelectedObject.transform);
+
         Debug.Log($"Selected object: {currentSelectedObject.name}");
     }
 
