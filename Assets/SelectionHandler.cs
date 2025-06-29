@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SelectionHandler : MonoBehaviour
 {
+    public Material defaultMat;
+    public Material selectedMat;
+
+    private GameObject currentSelectedObject;
+
     void Start()
     {
         
@@ -18,8 +23,41 @@ public class SelectionHandler : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log($"Selected object: {hit.collider.gameObject.name}");
+                if (hit.collider.CompareTag("Interactable"))
+                {
+                    HandleSelection(hit.collider.gameObject);
+                }
+                else
+                {
+                    HandleDeselection();
+                }
             }
+            else
+            {
+                HandleDeselection();
+            }
+        }
+    }
+
+    void HandleSelection(GameObject newObject)
+    {
+        if (currentSelectedObject != null)
+        {
+            currentSelectedObject.GetComponent<Renderer>().material = defaultMat;
+        }
+
+        currentSelectedObject = newObject;
+        currentSelectedObject.GetComponent<Renderer>().material = selectedMat;
+        Debug.Log($"Selected object: {currentSelectedObject.name}");
+    }
+
+    void HandleDeselection()
+    {
+        if (currentSelectedObject != null)
+        {
+            currentSelectedObject.GetComponent<Renderer>().material = defaultMat;
+            currentSelectedObject = null;
+            Debug.Log("Selection cleared.");
         }
     }
 }
