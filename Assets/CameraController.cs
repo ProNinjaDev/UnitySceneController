@@ -5,16 +5,20 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     private Transform currentTarget;
+    private Vector3 focusPoint;
+
+    [Header("Settings")]
     public Vector3 offset = new Vector3(0f, 3f, -5f);
     public float smoothSpeed = 3f;
     public float rotationSpeed = 5f;
     public float zoomSpeed = 10f;
+    public float panSpeed = 2f;
+    public float smoothPan = 0.01f;
 
+    [Header("Zoom limits")]
     public float minZoomDistance = 2f;
     public float maxZoomDistance = 15f;
 
-    private Vector3 focusPoint;
-    public float panSpeed = 2f;
 
     void Start()
     {
@@ -46,8 +50,9 @@ public class CameraController : MonoBehaviour
 
             if (Input.GetMouseButton(2))
             {
-                focusPoint -= transform.right * Input.GetAxis("Mouse X") * panSpeed;
-                focusPoint -= transform.up * Input.GetAxis("Mouse Y") * panSpeed;
+                float currentDistance = offset.magnitude;
+                focusPoint -= transform.right * Input.GetAxis("Mouse X") * panSpeed * currentDistance * smoothPan;
+                focusPoint -= transform.up * Input.GetAxis("Mouse Y") * panSpeed * currentDistance * smoothPan;
             }
 
 
