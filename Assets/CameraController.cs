@@ -8,6 +8,9 @@ public class CameraController : MonoBehaviour
     public Vector3 offset = new Vector3(0f, 3f, -5f);
     public float smoothSpeed = 3f;
     public float rotationSpeed = 5f;
+    public float zoomSpeed = 10f;
+    public float minZoomDistance = 2f;
+    public float maxZoomDistance = 15f;
 
     void Start()
     {
@@ -23,6 +26,21 @@ public class CameraController : MonoBehaviour
     {
         if (currentTarget != null) 
         {
+
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+            if (scrollInput != 0f) 
+            {
+                float currentDistance = offset.magnitude;
+                float newDistance = currentDistance - scrollInput * zoomSpeed;
+
+                newDistance = Mathf.Clamp(newDistance, minZoomDistance, maxZoomDistance);
+
+                offset = offset.normalized * newDistance;
+
+            }
+
+
             if (Input.GetMouseButton(1))
             {
                 float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
