@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class SelectionHandler : MonoBehaviour
 {
+    private static SelectionHandler _instance;
+
+    [Header("Materials")]
     public Material defaultMat;
     public Material selectedMat;
 
-    private GameObject currentSelectedObject;
+    //private GameObject currentSelectedObject;
 
+    [Header("Dependencies")]
     public CameraController cameraController;
+
+    private readonly List<GameObject> _selectedObjects = new List<GameObject>();
 
     void Start()
     {
@@ -21,13 +27,11 @@ public class SelectionHandler : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out var hit))
             {
                 if (hit.collider.CompareTag("Interactable"))
                 {
-                    HandleSelection(hit.collider.gameObject);
+                    HandleSelection(hit.collider.gameObject, true);
                 }
                 else
                 {
@@ -41,28 +45,58 @@ public class SelectionHandler : MonoBehaviour
         }
     }
 
-    void HandleSelection(GameObject newObject)
+    public void HandleSelection(GameObject selectedObject, bool focusCamera = false)
     {
-        if (currentSelectedObject != null)
+        if (selectedObject == null) return;
+
+        if (_selectedObjects.Contains(selectedObject))
         {
-            currentSelectedObject.GetComponent<Renderer>().material = defaultMat;
+            HandleDeselection(selectedObject);
         }
+        else
+        {
+            _selectedObjects.Add(selectedObject);
+            selectedObject.GetComponent<Renderer>().material = selectedMat;
+            Debug.Log($"Selected object: {selectedObject.name}");
 
-        currentSelectedObject = newObject;
-        currentSelectedObject.GetComponent<Renderer>().material = selectedMat;
-
-        cameraController.FocusOnObject(currentSelectedObject.transform);
-
-        Debug.Log($"Selected object: {currentSelectedObject.name}");
+            if (focusCamera)
+            {
+                cameraController.FocusOnObject(selectedObject.transform);
+            }
+        }
     }
 
-    void HandleDeselection()
+    public void HandleDeselection()
     {
-        if (currentSelectedObject != null)
+        foreach (var obj in new List<GameObject>(_selectedObjects))
         {
-            currentSelectedObject.GetComponent<Renderer>().material = defaultMat;
-            currentSelectedObject = null;
-            Debug.Log("Selection cleared.");
+            HandleDeselection(obj);
+        }
+        Debug.Log("Selection cleared");
+    }
+
+    public void HandleDeselection(GameObject selectedObject)
+    {
+        if (selectedObject == null || !_selectedObjects.Contains(selectedObject)) return;
+
+        selectedObject.GetComponent<Renderer>().material = defaultMat;
+        _selectedObjects.Remove(selectedObject);
+    }
+
+    public static SelectionHandler GetInstance()
+    {
+        return _instance;
+    }
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            _instance = this;
         }
     }
 }

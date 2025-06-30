@@ -21,6 +21,12 @@ public class UIListController : MonoBehaviour
 
             newLine.transform.SetParent(listContainer, false);
 
+            UIListItem itemScript = newLine.GetComponent<UIListItem>();
+            if (itemScript != null)
+            {
+                itemScript.Setup(obj);
+            }
+
             TextMeshProUGUI objectNameText = newLine.GetComponentInChildren<TextMeshProUGUI>();
 
             if (objectNameText != null)
