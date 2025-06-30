@@ -29,18 +29,49 @@ public class UIListItem : MonoBehaviour
 
         selectionToggle.onValueChanged.AddListener(HandleSelectionToggle);
         button.onClick.AddListener(HandleVisibilityButtonClick);
+
+        SelectionHandler.GetInstance().SelectionUpdated += UpdateVisuals;
+        UpdateVisuals();
+    }
+
+    private void OnDestroy()
+    {
+        if (SelectionHandler.GetInstance() != null)
+        {
+            SelectionHandler.GetInstance().SelectionUpdated -= UpdateVisuals;
+        }
     }
 
     public void HandleSelectionToggle(bool isSelected)
     {
         if (_referencedObject == null) return;
+        
+        var handler = SelectionHandler.GetInstance();
+        bool isCurrentlySelected = handler.IsSelected(_referencedObject);
 
-        SelectionHandler.GetInstance().HandleSelection(_referencedObject);
+        if (isSelected)
+        {
+            handler.HandleSelection(_referencedObject);
+        }
+        else
+        {
+            handler.HandleDeselection(_referencedObject);
+        }
     }
 
     public void HandleVisibilityButtonClick()
     {
-        bool newVisibility = !_referencedObject.activeSelf;
-        _referencedObject.SetActive(newVisibility);
+        if (_referencedObject != null)
+        {
+            _referencedObject.SetActive(!_referencedObject.activeSelf);
+        }
+    }
+    
+    private void UpdateVisuals()
+    {
+        if (_referencedObject == null) return;
+        
+        bool isSelected = SelectionHandler.GetInstance().IsSelected(_referencedObject);
+        selectionToggle.SetIsOnWithoutNotify(isSelected);
     }
 }

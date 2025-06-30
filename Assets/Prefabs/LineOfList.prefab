@@ -102,7 +102,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 30
+  m_PreferredWidth: 20
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -207,6 +207,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eff7de252eb0524a87fef198b09fd4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectionToggle: {fileID: 3518573015886649773}
+  button: {fileID: 3518573017387425751}
 --- !u!1 &3518573016365864834
 GameObject:
   m_ObjectHideFlags: 0

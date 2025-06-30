@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SelectionHandler : MonoBehaviour
 {
@@ -10,12 +12,14 @@ public class SelectionHandler : MonoBehaviour
     public Material defaultMat;
     public Material selectedMat;
 
-    //private GameObject currentSelectedObject;
 
     [Header("Dependencies")]
     public CameraController cameraController;
 
     private readonly List<GameObject> _selectedObjects = new List<GameObject>();
+
+    public event Action SelectionUpdated;
+
 
     void Start()
     {
@@ -26,6 +30,11 @@ public class SelectionHandler : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+            
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit))
             {
@@ -63,6 +72,7 @@ public class SelectionHandler : MonoBehaviour
             {
                 cameraController.FocusOnObject(selectedObject.transform);
             }
+            SelectionUpdated?.Invoke();
         }
     }
 
@@ -81,12 +91,15 @@ public class SelectionHandler : MonoBehaviour
 
         selectedObject.GetComponent<Renderer>().material = defaultMat;
         _selectedObjects.Remove(selectedObject);
+        SelectionUpdated?.Invoke();
     }
 
-    public static SelectionHandler GetInstance()
+    public bool IsSelected(GameObject obj)
     {
-        return _instance;
+        return _selectedObjects.Contains(obj);
     }
+
+    public static SelectionHandler GetInstance() => _instance;
 
     private void Awake()
     {
