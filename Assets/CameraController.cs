@@ -9,8 +9,12 @@ public class CameraController : MonoBehaviour
     public float smoothSpeed = 3f;
     public float rotationSpeed = 5f;
     public float zoomSpeed = 10f;
+
     public float minZoomDistance = 2f;
     public float maxZoomDistance = 15f;
+
+    private Vector3 focusPoint;
+    public float panSpeed = 2f;
 
     void Start()
     {
@@ -40,8 +44,14 @@ public class CameraController : MonoBehaviour
 
             }
 
+            if (Input.GetMouseButton(2))
+            {
+                focusPoint -= transform.right * Input.GetAxis("Mouse X") * panSpeed;
+                focusPoint -= transform.up * Input.GetAxis("Mouse Y") * panSpeed;
+            }
 
-            if (Input.GetMouseButton(1))
+
+            else if (Input.GetMouseButton(1))
             {
                 float mouseX = Input.GetAxis("Mouse X") * rotationSpeed;
                 offset = Quaternion.AngleAxis(mouseX, Vector3.up) * offset;
@@ -60,17 +70,17 @@ public class CameraController : MonoBehaviour
                 }
             }
 
-            Vector3 targetCameraPos = currentTarget.position + offset;
+            Vector3 targetCameraPos = focusPoint + offset;
             Vector3 newPosition = Vector3.Lerp(transform.position, targetCameraPos, smoothSpeed * Time.deltaTime);
             transform.position = newPosition;
 
-            transform.LookAt(currentTarget);
+            transform.LookAt(focusPoint);
         }
     }
 
     public void FocusOnObject(Transform focusTarget) 
     {
         currentTarget = focusTarget;
-        //Debug.Log($"Focus on {focusTarget.name}");
+        focusPoint = currentTarget.position;
     }
 }

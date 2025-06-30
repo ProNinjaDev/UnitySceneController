@@ -558,6 +558,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 3, z: -5}
   smoothSpeed: 3
+  rotationSpeed: 5
+  zoomSpeed: 10
+  minZoomDistance: 2
+  maxZoomDistance: 15
+  panSpeed: 1
 --- !u!1 &1120613347
 GameObject:
   m_ObjectHideFlags: 0
