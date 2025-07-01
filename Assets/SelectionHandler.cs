@@ -8,6 +8,10 @@ public class SelectionHandler : MonoBehaviour
 {
     private static SelectionHandler _instance;
 
+    [Header("UI Panel")]
+    [SerializeField]
+    private GameObject _uiPanel;
+
     [Header("Materials")]
     public Material defaultMat;
     public Material selectedMat;
@@ -51,6 +55,14 @@ public class SelectionHandler : MonoBehaviour
             {
                 HandleDeselection();
             }
+        }
+    }
+
+    public void ToggleUIPanel()
+    {
+        if (_uiPanel != null)
+        {
+            _uiPanel.SetActive(!_uiPanel.activeSelf);
         }
     }
 
