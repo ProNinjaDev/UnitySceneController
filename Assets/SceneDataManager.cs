@@ -115,7 +115,7 @@ public class SceneDataManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"Some objects are either hidden or otherwise modified")
+                Debug.LogWarning($"Some objects are either hidden or otherwise modified");
             }
         }
 

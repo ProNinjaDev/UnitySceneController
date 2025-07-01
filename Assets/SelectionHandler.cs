@@ -12,6 +12,10 @@ public class SelectionHandler : MonoBehaviour
     [SerializeField]
     private GameObject _uiPanel;
 
+    [Header("Additional Toggle Elements")]
+    [SerializeField]
+    private GameObject[] _additionalToggleElements;
+
     [Header("Materials")]
     public Material defaultMat;
     public Material selectedMat;
@@ -62,7 +66,20 @@ public class SelectionHandler : MonoBehaviour
     {
         if (_uiPanel != null)
         {
-            _uiPanel.SetActive(!_uiPanel.activeSelf);
+            bool newState = !_uiPanel.activeSelf;
+            
+            _uiPanel.SetActive(newState);
+
+            if (_additionalToggleElements != null)
+            {
+                foreach (var element in _additionalToggleElements)
+                {
+                    if (element != null)
+                    {
+                        element.SetActive(newState);
+                    }
+                }
+            }
         }
     }
 
