@@ -41,7 +41,6 @@ public class SceneDataManager : MonoBehaviour
         }
 
         saveFilePath = Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
-        Debug.Log($"Путь к файлу сохранения: {saveFilePath}");
     }
 
     public void SaveScene()
@@ -78,10 +77,49 @@ public class SceneDataManager : MonoBehaviour
         string json = JsonUtility.ToJson(sceneState, true);
 
         File.WriteAllText(saveFilePath, json);
+
+        Debug.Log("Scene was saved successfully");
     }
 
     public void LoadScene()
     {
+        if (!File.Exists(saveFilePath))
+        {
+            return;
+        }
 
+        string json = File.ReadAllText(saveFilePath);
+        SceneState loadedState = JsonUtility.FromJson<SceneState>(json);
+
+        if (loadedState == null || loadedState.objects == null)
+        {
+            return;
+        }
+
+        foreach (var objectState in loadedState.objects)
+        {
+            GameObject sceneObject = GameObject.Find(objectState.name);
+
+            if (sceneObject != null)
+            {
+                sceneObject.transform.position = objectState.position;
+                sceneObject.transform.rotation = objectState.rotation;
+                sceneObject.transform.localScale = objectState.scale;
+                sceneObject.SetActive(objectState.isActive);
+
+                Renderer renderer = sceneObject.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.color = objectState.color;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Some objects are either hidden or otherwise modified")
+            }
+        }
+
+        Debug.Log("Scene has been uploaded successfully");
     }
+
 }
