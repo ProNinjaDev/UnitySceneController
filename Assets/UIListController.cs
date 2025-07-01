@@ -10,7 +10,15 @@ public class UIListController : MonoBehaviour
     private GameObject lineOfListPrefab;
 
     [SerializeField]
-    private Transform listContainer; 
+    private Transform listContainer;
+
+    [Header("Header Control Sprites")]
+    [SerializeField] 
+    private Image visibilityButtonImage;
+    [SerializeField]
+    private Sprite eyeOnSprite;
+    [SerializeField]
+    private Sprite eyeOffSprite;
 
     private readonly List<GameObject> _interactableObjects = new List<GameObject>();
     private bool _allObjectsVisible = true;
@@ -71,6 +79,11 @@ public class UIListController : MonoBehaviour
         foreach (var obj in _interactableObjects)
         {
             obj.SetActive(_allObjectsVisible);
+        }
+
+        if (visibilityButtonImage != null)
+        {
+            visibilityButtonImage.sprite = _allObjectsVisible ? eyeOnSprite : eyeOffSprite;
         }
     }
 
