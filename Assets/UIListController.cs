@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIListController : MonoBehaviour
@@ -9,17 +10,24 @@ public class UIListController : MonoBehaviour
     private GameObject lineOfListPrefab;
 
     [SerializeField]
-    private Transform listContainer;
+    private Transform listContainer; 
+
+    private readonly List<GameObject> _interactableObjects = new List<GameObject>();
+    private bool _allObjectsVisible = true;
+
 
     void Start()
     {
-        GameObject[] interactableObjects = GameObject.FindGameObjectsWithTag("Interactable");
-
-        foreach (var obj in interactableObjects)
+        foreach (Transform child in listContainer)
         {
-            GameObject newLine = Instantiate(lineOfListPrefab);
+            Destroy(child.gameObject);
+        }
 
-            newLine.transform.SetParent(listContainer, false);
+        _interactableObjects.AddRange(GameObject.FindGameObjectsWithTag("Interactable"));
+
+        foreach (var obj in _interactableObjects)
+        {
+            GameObject newLine = Instantiate(lineOfListPrefab, listContainer);
 
             UIListItem itemScript = newLine.GetComponent<UIListItem>();
             if (itemScript != null)
@@ -28,7 +36,6 @@ public class UIListController : MonoBehaviour
             }
 
             TextMeshProUGUI objectNameText = newLine.GetComponentInChildren<TextMeshProUGUI>();
-
             if (objectNameText != null)
             {
                 objectNameText.text = obj.name;
@@ -36,8 +43,34 @@ public class UIListController : MonoBehaviour
         }
     }
 
-    void Update()
+    public void ToggleAllCheckboxes(bool selectAll)
     {
-        
+        var selectionHandler = SelectionHandler.GetInstance();
+        if (selectionHandler == null) return;
+
+        if (selectAll)
+        {
+            foreach (var obj in _interactableObjects)
+            {
+                if (!selectionHandler.IsSelected(obj))
+                {
+                    selectionHandler.HandleSelection(obj, false);
+                }
+            }
+        }
+        else
+        {
+            selectionHandler.HandleDeselection();
+        }
+    }
+
+    public void ToggleAllVisibility()
+    {
+        _allObjectsVisible = !_allObjectsVisible;
+
+        foreach (var obj in _interactableObjects)
+        {
+            obj.SetActive(_allObjectsVisible);
+        }
     }
 }
