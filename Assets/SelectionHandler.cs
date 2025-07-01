@@ -132,6 +132,30 @@ public class SelectionHandler : MonoBehaviour
         selectedMat.color = currentColor;
     }
 
+    public void ReplaceSelection(List<GameObject> newSelection)
+    {
+        foreach (var obj in _selectedObjects)
+        {
+            obj.GetComponent<Renderer>().material = defaultMat;
+        }
+        _selectedObjects.Clear();
+
+        if (newSelection != null)
+        {
+            foreach (var obj in newSelection)
+            {
+                if (obj != null)
+                {
+                   _selectedObjects.Add(obj);
+                   obj.GetComponent<Renderer>().material = selectedMat;
+                }
+            }
+        }
+
+        SelectionUpdated?.Invoke();
+        Debug.Log($"Selection state loaded");
+    }
+
     public bool IsSelected(GameObject obj)
     {
         return _selectedObjects.Contains(obj);

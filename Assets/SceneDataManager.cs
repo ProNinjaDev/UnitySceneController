@@ -6,6 +6,7 @@ using UnityEngine;
 public class SceneState
 {
     public List<ObjectState> objects;
+    public float selectionTransparency;
 }
 
 [System.Serializable]
@@ -16,8 +17,7 @@ public class ObjectState
     public Quaternion rotation;
     public Vector3 scale;
     public bool isActive;
-    public Color color;
-    public float transparency;
+    public bool isSelected;
 }
 
 public class SceneDataManager : MonoBehaviour
@@ -49,17 +49,12 @@ public class SceneDataManager : MonoBehaviour
 
         SceneState sceneState = new SceneState
         {
-            objects = new List<ObjectState>()
+            objects = new List<ObjectState>(),
+            selectionTransparency = SelectionHandler.GetInstance().selectedMat.color.a
         };
 
         foreach (var obj in interactableObjects)
         {
-            Renderer renderer = obj.GetComponent<Renderer>();
-            if (renderer == null)
-            {
-                continue;
-            }
-
             ObjectState objectState = new ObjectState
             {
                 name = obj.name,
@@ -67,17 +62,14 @@ public class SceneDataManager : MonoBehaviour
                 rotation = obj.transform.rotation,
                 scale = obj.transform.localScale,
                 isActive = obj.activeSelf,
-                color = renderer.material.color,
-                transparency = renderer.material.color.a
+                isSelected = SelectionHandler.GetInstance().IsSelected(obj)
             };
 
             sceneState.objects.Add(objectState);
         }
 
         string json = JsonUtility.ToJson(sceneState, true);
-
         File.WriteAllText(saveFilePath, json);
-
         Debug.Log("Scene was saved successfully");
     }
 
@@ -91,15 +83,15 @@ public class SceneDataManager : MonoBehaviour
         string json = File.ReadAllText(saveFilePath);
         SceneState loadedState = JsonUtility.FromJson<SceneState>(json);
 
-        if (loadedState == null || loadedState.objects == null)
-        {
-            return;
-        }
+        if (loadedState == null || loadedState.objects == null) return;
+
+        SelectionHandler.GetInstance().SetSelectionTransparency(loadedState.selectionTransparency);
+
+        List<GameObject> objectsToSelect = new List<GameObject>();
 
         foreach (var objectState in loadedState.objects)
         {
             GameObject sceneObject = GameObject.Find(objectState.name);
-
             if (sceneObject != null)
             {
                 sceneObject.transform.position = objectState.position;
@@ -107,10 +99,9 @@ public class SceneDataManager : MonoBehaviour
                 sceneObject.transform.localScale = objectState.scale;
                 sceneObject.SetActive(objectState.isActive);
 
-                Renderer renderer = sceneObject.GetComponent<Renderer>();
-                if (renderer != null)
+                if (objectState.isSelected)
                 {
-                    renderer.material.color = objectState.color;
+                    objectsToSelect.Add(sceneObject);
                 }
             }
             else
@@ -119,7 +110,9 @@ public class SceneDataManager : MonoBehaviour
             }
         }
 
-        Debug.Log("Scene has been uploaded successfully");
+        SelectionHandler.GetInstance().ReplaceSelection(objectsToSelect);
+
+        Debug.Log("Scene has been loaded successfully");
     }
 
 }
