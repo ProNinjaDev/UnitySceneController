@@ -12,6 +12,10 @@ public class SelectionHandler : MonoBehaviour
     [SerializeField]
     private GameObject _uiPanel;
 
+    [Header("Additional Toggle Elements")]
+    [SerializeField]
+    private GameObject[] _additionalToggleElements;
+
     [Header("Materials")]
     public Material defaultMat;
     public Material selectedMat;
@@ -62,7 +66,20 @@ public class SelectionHandler : MonoBehaviour
     {
         if (_uiPanel != null)
         {
-            _uiPanel.SetActive(!_uiPanel.activeSelf);
+            bool newState = !_uiPanel.activeSelf;
+            
+            _uiPanel.SetActive(newState);
+
+            if (_additionalToggleElements != null)
+            {
+                foreach (var element in _additionalToggleElements)
+                {
+                    if (element != null)
+                    {
+                        element.SetActive(newState);
+                    }
+                }
+            }
         }
     }
 
@@ -113,6 +130,30 @@ public class SelectionHandler : MonoBehaviour
         Color currentColor = selectedMat.color;
         currentColor.a = alpha;
         selectedMat.color = currentColor;
+    }
+
+    public void ReplaceSelection(List<GameObject> newSelection)
+    {
+        foreach (var obj in _selectedObjects)
+        {
+            obj.GetComponent<Renderer>().material = defaultMat;
+        }
+        _selectedObjects.Clear();
+
+        if (newSelection != null)
+        {
+            foreach (var obj in newSelection)
+            {
+                if (obj != null)
+                {
+                   _selectedObjects.Add(obj);
+                   obj.GetComponent<Renderer>().material = selectedMat;
+                }
+            }
+        }
+
+        SelectionUpdated?.Invoke();
+        Debug.Log($"Selection state loaded");
     }
 
     public bool IsSelected(GameObject obj)
