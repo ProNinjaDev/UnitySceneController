@@ -73,4 +73,24 @@ public class UIListController : MonoBehaviour
             obj.SetActive(_allObjectsVisible);
         }
     }
+
+    public void SetTransparency100()
+    {
+        SelectionHandler.GetInstance().SetSelectionTransparency(1.0f);
+    }
+
+    public void SetTransparency75()
+    {
+        SelectionHandler.GetInstance().SetSelectionTransparency(0.75f);
+    }
+
+    public void SetTransparency50()
+    {
+        SelectionHandler.GetInstance().SetSelectionTransparency(0.5f);
+    }
+
+    public void SetTransparency25()
+    {
+        SelectionHandler.GetInstance().SetSelectionTransparency(0.25f);
+    }
 }

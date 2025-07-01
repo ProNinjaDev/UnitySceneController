@@ -94,6 +94,15 @@ public class SelectionHandler : MonoBehaviour
         SelectionUpdated?.Invoke();
     }
 
+    public void SetSelectionTransparency(float alpha)
+    {
+        if (selectedMat == null) return;
+
+        Color currentColor = selectedMat.color;
+        currentColor.a = alpha;
+        selectedMat.color = currentColor;
+    }
+
     public bool IsSelected(GameObject obj)
     {
         return _selectedObjects.Contains(obj);
